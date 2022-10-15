@@ -17,10 +17,10 @@ class RateLimiterService
      * @param int $decaySeconds
      */
     public function __construct(
-        private int $user = 0,
-        private string $key = '',
-        private int $maxAttempts = 0,
-        private int $decaySeconds = 0,
+        protected int $user = 0,
+        protected string $key = '',
+        protected int $maxAttempts = 0,
+        protected int $decaySeconds = 0,
     ) {}
 
     /**

@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class JobVacancyController extends Controller
 {
-
     /**
      * @param JobVacancyRepository $jobVacancyRepository
      */
@@ -35,11 +34,11 @@ class JobVacancyController extends Controller
      * @param Request $request
      * @return JsonResponse|null
      */
-    public function store(Request $request): JsonResponse|null
+    public function store(Request $request)
     {
         try {
             $request->validate(['title' => 'required', 'description' => 'required']);
-            return (new JobVacancyRepository())->createJobVacancy($request);
+            return $this->jobVacancyRepository->createJobVacancy($request);
         } catch (\Exception $e) {
             return response()->json($e->getMessage());
         }
