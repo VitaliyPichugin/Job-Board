@@ -17,11 +17,6 @@ class JobVacancyResponse extends Model
         return $this->belongsTo(JobVacancy::class);
     }
 
-    public function check()
-    {
-        return $this->belongsTo(JobVacancy::class);
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);

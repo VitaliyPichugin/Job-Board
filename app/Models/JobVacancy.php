@@ -31,4 +31,9 @@ class JobVacancy extends Model
     {
         return $this->morphToMany(UserLike::class, 'likeable');
     }
+
+    public function scopeAuthor($query, $id)
+    {
+        return $query->whereId($id)->where('user_id', auth()->id());
+    }
 }

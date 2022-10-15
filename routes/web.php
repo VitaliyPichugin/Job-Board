@@ -20,6 +20,9 @@ Route::group(['middleware' => 'auth'], function (){
 
     Route::group(['prefix' => 'job'], function (){
         Route::get('all', [JobVacancyController::class, 'getAll']);
+        Route::post('store', [JobVacancyController::class, 'store'])->name('limit');
+        Route::post('send', [JobVacancyController::class, 'sendJobVacancyResponse']);
+        Route::put('like', [JobVacancyController::class, 'like']);
     });
 
     Route::group(['prefix' => 'tag'], function (){

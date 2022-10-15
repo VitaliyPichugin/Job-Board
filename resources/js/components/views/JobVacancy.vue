@@ -75,7 +75,21 @@ export default {
 
         },
         sendResponse(job_id, author_id) {
-
+            axios.post('/job/send', {job_id: job_id, author_id: author_id})
+                .then((res) => {
+                    switch (res.status) {
+                        case  200:
+                            this.$toast.success(res.data, {position: 'top-right'});
+                            break;
+                        case  201:
+                            this.$toast.info(res.data, {position: 'top-right'});
+                            break;
+                    }
+                    this.getData()
+                })
+                .catch((error) => {
+                    this.$toast.error(error.response.data.message, {position: 'top-right'});
+                })
         },
     },
     mounted() {
