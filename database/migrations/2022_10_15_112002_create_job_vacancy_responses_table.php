@@ -18,7 +18,6 @@ return new class extends Migration
             $table->unsignedInteger('job_id')->index();
             $table->unsignedInteger('user_id')->index();
             $table->boolean('notified')->default(0)->index();
-            //$table->timestamp('notified_at')->nullable();
             $table->timestamps();
 
             $table->softDeletes();
