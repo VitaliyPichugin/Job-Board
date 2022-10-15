@@ -116,9 +116,27 @@ class JobVacancyRepository
 
     /**
      * @param $request
-     *
+     * @return int
      */
-    public function like($request)
+    public function like($request) : int
+    {
+        $user = UserLike::find(auth()->id());
+        $res = match ($request->type) {
+            'user' => $user->likeUser()->toggle($request->id),
+            'job' => $user->likeJob()->toggle($request->id),
+        };
+        if (in_array($request->id, $res['attached'])) {
+            return 1;
+        }
+        return 0;
+    }
+
+    public function  deleteJobVacancy($id)
+    {
+
+    }
+
+    public function updateJobVacancy($request)
     {
     }
 

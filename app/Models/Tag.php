@@ -13,6 +13,9 @@ class Tag extends Model
 
     public $timestamps = false;
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function jobs()
     {
         return $this->belongsToMany(JobVacancy::class, 'tag_job');

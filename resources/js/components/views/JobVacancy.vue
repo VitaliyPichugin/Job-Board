@@ -72,7 +72,9 @@ export default {
                 );
         },
         like(id, type) {
-
+            axios.put(`/job/like`, {id: id, type: type}).then((r) => {
+                this.getData()
+            });
         },
         sendResponse(job_id, author_id) {
             axios.post('/job/send', {job_id: job_id, author_id: author_id})

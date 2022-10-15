@@ -64,11 +64,17 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function responses()
     {
         return $this->hasMany(JobVacancyResponse::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
     public function proposals()
     {
         return $this->hasManyThrough(
@@ -79,5 +85,13 @@ class User extends Authenticatable implements JWTSubject
             'id',
             'id'
         );
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
+     */
+    public function likes()
+    {
+        return $this->morphToMany(UserLike::class, 'likeable');
     }
 }

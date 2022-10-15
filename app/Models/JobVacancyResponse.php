@@ -12,11 +12,17 @@ class JobVacancyResponse extends Model
 
     protected $guarded = [];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function job()
     {
         return $this->belongsTo(JobVacancy::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user()
     {
         return $this->belongsTo(User::class);

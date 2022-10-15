@@ -11,11 +11,17 @@ class UserLike extends Model
 
     protected $table = 'users';
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
+     */
     public function likeUser()
     {
         return $this->morphedByMany(User::class, 'likeable');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
+     */
     public function likeJob()
     {
         return $this->morphedByMany(JobVacancy::class, 'likeable');
