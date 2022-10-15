@@ -2,7 +2,10 @@
 namespace App\Repositories;
 
 use App\Models\JobVacancy;
+use App\Models\User;
 use App\Models\UserLike;
+use App\Services\CoinService;
+use App\Services\RateLimiterService as RateLimiter;
 use Illuminate\Http\JsonResponse;
 
 class JobVacancyRepository
@@ -32,4 +35,6 @@ class JobVacancyRepository
                                     'data' => $data,
                                 ]);
     }
+
+
 }

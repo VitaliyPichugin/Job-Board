@@ -11,13 +11,13 @@ class TagController extends Controller
 {
     /**
      * @param Request $request
-     * @return JsonResponse | Collection
+     * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse|Collection
+    public function store(Request $request): JsonResponse
     {
         try {
             $request->validate(['name' => 'required']);
-            return Tag::create(['name' => $request->name]);
+            return response()->json(Tag::create(['name' => $request->name]));
         } catch (\Exception $e) {
             return response()->json($e->getMessage(), 409,);
         }
