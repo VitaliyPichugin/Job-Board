@@ -9,6 +9,7 @@ use App\Models\UserLike;
 use App\Services\CoinService;
 use App\Services\RateLimiterService as RateLimiter;
 use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
 
 class JobVacancyRepository
 {
@@ -51,7 +52,7 @@ class JobVacancyRepository
             $obj = new RateLimiter(
                 (int)$user,
                 'send-job',
-                200,//config('global.limit_send_job'),
+                config('global.limit_send_job'),
                 config('global.period_send_job')
             );
             $obj->throttle(function () use ($request, $user, $coinService) {
@@ -118,7 +119,7 @@ class JobVacancyRepository
      * @param $request
      * @return int
      */
-    public function like($request) : int
+    public function like($request): int
     {
         $user = UserLike::find(auth()->id());
         $res = match ($request->type) {
@@ -131,13 +132,137 @@ class JobVacancyRepository
         return 0;
     }
 
-    public function  deleteJobVacancy($id)
+    /**
+     * @param $request
+     * @return mixed
+     */
+    public function getListJobVacancies($request): mixed
     {
-
+        return JobVacancy::query()
+            ->when($request->has('sort_date'), function ($query) use ($request) {
+                $query->orderBy('created_at', $request->sort_date);
+            })
+            ->when($request->has('sort_response'), function ($query) use ($request) {
+                $query->withCount('responses')
+                    ->orderBy('responses_count', $request->sort_response);
+            })
+            ->when($request->has('tags'), function ($query) use ($request) {
+                $query->whereHas('tags', function ($q) use ($request) {
+                    return $q->whereIn('tag_id', $request->tags);
+                });
+            })
+            ->when($request->has('date'), function ($query) use ($request) {
+                $query->whereDate('created_at', $request->date);
+            })
+            ->when($request->has('day'), function ($query) use ($request) {
+                $query->whereDay('created_at', $request->day);
+            })
+            ->when($request->has('month'), function ($query) use ($request) {
+                $query->whereMonth('created_at', $request->month);
+            })
+            ->when($request->has('year'), function ($query) use ($request) {
+                $query->whereYear('created_at', $request->year);
+            })
+            ->when($request->has('week'), function ($query) use ($request) {
+                $date = Carbon::now();
+                $date->setISODate($date->year, $request->week);
+                $query->whereBetween(
+                    'created_at',
+                    [$date->startOfWeek()->format('Y-m-d'), $date->endOfWeek()->format('Y-m-d')]
+                );
+            })
+            ->get();
     }
 
-    public function updateJobVacancy($request)
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
+    public function deleteJobVacancy($id): JsonResponse
     {
+        $job = $this->checkJobVacancy($id);
+        if ($job) {
+            $job->responses()->where('job_id', $job->id)->delete();
+            $job->delete();
+            return response()->json("Job was deleted");
+        }
+        return response()->json("You can only delete your job vacancy");
+    }
+
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
+    public function deleteResponse($id): JsonResponse
+    {
+        $jobResponse = JobVacancyResponse::find($id);
+        if ($jobResponse && auth()->id() === $jobResponse->user_id) {
+            $jobResponse->delete();
+            return response()->json("Job Response was deleted");
+        }
+        return response()->json("You can only delete your proposals");
+    }
+
+    /**
+     * @param $request
+     * @param $id
+     * @return JsonResponse
+     */
+    public function updateJobVacancy($request, $id): JsonResponse
+    {
+        $job = $this->checkJobVacancy($id);
+        if ($job) {
+            $job->title = $request->title;
+            $job->description = $request->description;
+            $job->save();
+            $tags = $this->validTags($request->tags);
+            if ($tags) {
+                $job->tags()->sync($tags);
+            }
+            return response()->json("Job was updated");
+        }
+        return response()->json("You can only update your job vacancy");
+    }
+
+    /**
+     * @param $id
+     * @return false|JobVacancy
+     */
+    private function checkJobVacancy($id): bool|JobVacancy
+    {
+        $job = JobVacancy::find($id);
+        if ($job && auth()->id() === $job->user_id) {
+            return $job;
+        }
+        return false;
+    }
+
+    /**
+     * @param $tags
+     * @return array|false
+     */
+    private function validTags($tags): bool|array
+    {
+        if ($tags && count($tags)) {
+            $res = [];
+            foreach ($tags as $tag_id) {
+                if (is_numeric($tag_id)) {
+                    $res[$tag_id] = $tag_id;//uniq tags
+                }
+            }
+            return $res;
+        }
+        return false;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLiked(): mixed
+    {
+        return UserLike::with(['likeUser', 'likeJob'])
+            ->whereId(auth()->id())
+            ->get();
     }
 
     /**
