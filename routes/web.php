@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\JobVacancyController;
+use App\Http\Controllers\TagController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,10 +15,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::group(['middleware' => 'auth'], function (){
+    Route::get('/', [JobVacancyController::class, 'index']);
+
+    Route::group(['prefix' => 'job'], function (){
+        Route::get('all', [JobVacancyController::class, 'getAll']);
+    });
+
+    Route::group(['prefix' => 'tag'], function (){
+        Route::post('store ', [TagController::class, 'store']);
+        Route::get('all ', [TagController::class, 'getAll']);
+    });
 });
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

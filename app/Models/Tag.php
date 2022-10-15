@@ -9,5 +9,12 @@ class Tag extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public $timestamps = false;
+
+    public function jobs()
+    {
+        return $this->belongsToMany(JobVacancy::class, 'tag_job');
+    }
 }
