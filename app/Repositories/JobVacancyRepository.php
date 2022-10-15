@@ -23,7 +23,7 @@ class JobVacancyRepository
                 $item->like_jobs = $item->likeJob->pluck('id')->toArray();
                 return $item;
             });
-        $data = JobVacancy::with(['user', 'responses'])
+        $data = JobVacancy::with(['tags', 'user', 'responses'])
             ->get()
             ->map(function ($item) {
                 $item->diff_human = $item->created_at->diffForHumans();
@@ -34,6 +34,32 @@ class JobVacancyRepository
                                     'likes' => $userLikes->first(),
                                     'data' => $data,
                                 ]);
+    }
+
+    /**
+     * @param $request
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function createJobVacancy($request): JsonResponse
+    {
+        $user = auth()->id();
+        $coinService = new CoinService(User::find($user), 'POST_JOB');
+        if ($coinService->checkUserCoins()) {
+            $obj = new RateLimiter((int)$user, 'send-job', 200, 3600 * 24);
+            $obj->throttle(function () use ($request, $user, $coinService) {
+                $job = new JobVacancy();
+                $job->title = $request->title;
+                $job->description = $request->description;
+                $job->user_id = $user;
+                $job->save();
+                $job->tags()->attach(collect($request->tags)->pluck('id'));
+                $coinService->updateUserCoins();
+            });
+            return response()->json("Job was posted");
+        } else {
+            return response()->json("Sorry not enough coins for send response", 201);
+        }
     }
 
 

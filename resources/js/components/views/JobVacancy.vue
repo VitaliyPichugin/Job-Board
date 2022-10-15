@@ -11,8 +11,8 @@
                                 <h6 class="mb-0">{{ job.user.name }}</h6> <span>{{ job.diff_human }}</span>
                             </div>
                         </div>
+                        <Tags :tags="job.tags"/>
                     </div>
-                    <Tags :tags="job.tags"/>
                     <div class="mt-3">
                         <h3 class="heading ">{{ job.title }}</h3>
                         <p class="text ">{{ job.description }}</p>

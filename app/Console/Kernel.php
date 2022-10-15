@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('refill:daily')->dailyAt('20:10')->timezone('Europe/Kyiv');
+        $schedule->command('refill:daily')->dailyAt('20:30')->timezone('Europe/Kyiv');
     }
 
     /**

@@ -12,10 +12,7 @@ class JobVacancyController extends Controller
     /**
      * @param JobVacancyRepository $jobVacancyRepository
      */
-    public function __construct(protected  JobVacancyRepository $jobVacancyRepository)
-    {
-
-    }
+    public function __construct(protected  JobVacancyRepository $jobVacancyRepository) {}
 
     public function index()
     {
@@ -29,6 +26,20 @@ class JobVacancyController extends Controller
     {
         try {
             return $this->jobVacancyRepository->getAll();
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage());
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse|null
+     */
+    public function store(Request $request): JsonResponse|null
+    {
+        try {
+            $request->validate(['title' => 'required', 'description' => 'required']);
+            return (new JobVacancyRepository())->createJobVacancy($request);
         } catch (\Exception $e) {
             return response()->json($e->getMessage());
         }

@@ -81,15 +81,19 @@ export default {
                     this.getTags();
                 })
                 .catch((error) => {
-                    if(error.response.status === 409){
-                        this.$toast.info('Tag already exist', {position: 'top-right'});
-                    }else{
-                        this.$toast.error(error.response.status, {position: 'top-right'});
-                    }
+                    this.$toast.error(error.response.data.message, {position: 'top-right'});
                 })
         },
         createJob() {
-
+            axios.post(`/job/store`, this.job)
+                .then((res) => {
+                    this.sendToast(res);
+                    this.$emit('refresh');
+                })
+                .catch((error) => {
+                    this.$toast.error(error.response.data.message, {position: 'top-right'});
+                })
+            this.isOpen = false;
         },
         getTags() {
             axios.get('/tag/all').then((response) => this.items = response.data)
@@ -113,26 +117,22 @@ export default {
 </script>
 
 <style scoped>
-.root {
+.root{
     position: relative;
 }
-
-.modal {
+.modal{
     z-index: 1;
     position: absolute;
     top: 0;
     left: 0;
-    background-color: rgb(0, 0, 0, 0.1);
+    background-color: rgb(0,0,0,0.1);
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
-.card {
+.card{
     width: 30%;
 }
-
-
 </style>
