@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
-use \App\Http\Controllers\Api\JobVacancyController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\JobVacancyController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,14 +25,20 @@ Route::group(['middleware' => 'api'], function () {
 
     Route::group(['prefix' => 'job'], function () {
         Route::post('create', [JobVacancyController::class, 'createJobVacancy']);
-        Route::post('update', [JobVacancyController::class, 'updateJobVacancy']);
+        Route::post('update/{id}', [JobVacancyController::class, 'updateJobVacancy']);
         Route::delete('{id}', [JobVacancyController::class, 'deleteJobVacancy']);
         Route::post('send-response', [JobVacancyController::class, 'sendJobVacancyResponse']);
-        Route::delete('response/', [JobVacancyController::class, 'deleteResponse']);
+        Route::delete('response/{id}', [JobVacancyController::class, 'deleteResponse']);
         Route::get('liked', [JobVacancyController::class, 'getLiked']);
 
-        Route::get('all', [JobVacancyController::class, 'index']);
-        Route::get('{id}', [JobVacancyController::class, 'show']);
-        Route::get('list-of-job-vacancies', [JobVacancyController::class, 'getListJobVacancies']);
+        Route::get('all', [JobVacancyController::class, 'index'])
+            ->name('index')
+        ;
+        Route::get('detail/{id}', [JobVacancyController::class, 'show'])
+            ->name('show')
+        ;
+        Route::get('list-of-job-vacancies', [JobVacancyController::class, 'getListJobVacancies'])
+            ->name('getListJobVacancies')
+        ;
     });
 });

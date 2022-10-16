@@ -81,7 +81,7 @@ export default {
                     this.getTags();
                 })
                 .catch((error) => {
-                    this.$toast.error(error.response.data.message, {position: 'top-right'});
+                    this.$toast.error('Tag already exist or empty field', {position: 'top-right'});
                 })
         },
         createJob() {
@@ -109,6 +109,9 @@ export default {
                     break;
                 case  201:
                     this.$toast.info(res.data, {position: 'top-right'});
+                    break;
+                case  409:
+                    this.$toast.info('Tag already exist', {position: 'top-right'});
                     break;
             }
         }

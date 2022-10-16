@@ -63,6 +63,6 @@ class CoinService
      */
     public function checkUserCoins(): bool
     {
-        return ($this->user->coin - $this->cost) >= 0 ? true : false;
+        return ($this->user->coin - $this->cost) >= 0 ?? false;
     }
 }

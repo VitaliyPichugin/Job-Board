@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\JobVacancyRequest;
 use App\Http\Resources\JobVacancyResource;
 use App\Http\Resources\LikedResource;
 use App\Models\JobVacancy;
@@ -18,7 +19,7 @@ class JobVacancyController extends Controller
      */
     public function __construct(protected JobVacancyRepository $jobVacancyRepository)
     {
-        $this->middleware('api', ['except' => ['getListJobVacancies', 'show', 'index']]);
+        $this->middleware('auth:api', ['except' => ['getListJobVacancies', 'show', 'index']]);
     }
 
     /**
@@ -43,13 +44,12 @@ class JobVacancyController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param JobVacancyRequest $request
      * @return JsonResponse|AnonymousResourceCollection
      */
-    public function getListJobVacancies(Request $request): JsonResponse|AnonymousResourceCollection
+    public function getListJobVacancies(JobVacancyRequest $request): JsonResponse|AnonymousResourceCollection
     {
         try {
-            //TODO validation
             return JobVacancyResource::collection($this->jobVacancyRepository->getListJobVacancies($request));
         } catch (\Exception $e) {
             return $this->jobVacancyRepository->failureResponse($e);

@@ -157,25 +157,25 @@ class JobVacancyRepository
                 ;
             })
             ->when($request->has('tags'), function ($query) use ($request) {
-                $query->whereHas('tags', function ($q) use ($request) {
+                $query->orWhereHas('tags', function ($q) use ($request) {
                     return $q->whereIn('tag_id', $request->tags);
                 });
             })
             ->when($request->has('date'), function ($query) use ($request) {
-                $query->whereDate('created_at', $request->date);
+                $query->orWhereDate('created_at', $request->date);
             })
             ->when($request->has('day'), function ($query) use ($request) {
-                $query->whereDay('created_at', $request->day);
+                $query->orWhereDay('created_at', $request->day);
             })
             ->when($request->has('month'), function ($query) use ($request) {
-                $query->whereMonth('created_at', $request->month);
+                $query->orWhereMonth('created_at', $request->month);
             })
             ->when($request->has('year'), function ($query) use ($request) {
-                $query->whereYear('created_at', $request->year);
+                $query->orWhereYear('created_at', $request->year);
             })
             ->when($request->has('week'), function ($query) use ($request) {
                 $date = Carbon::now();
-                $query->whereBetween(
+                $query->orWhereBetween(
                     'created_at',
                     [$date->startOfWeek()->format('Y-m-d'), $date->endOfWeek()->format('Y-m-d')]
                 );
