@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Services;
 
@@ -39,7 +39,7 @@ class CoinService
     /**
      * @return void
      */
-    static public function addCoins(): void
+    public static function addCoins(): void
     {
         $users = User::all();
         $new_coins = config('global.add_coins');
@@ -47,10 +47,11 @@ class CoinService
             $user_coins = $user->coin;
             $user_coins = $user->coin <= 5 ? $user_coins : 5;
             $user->coin = $user_coins + $new_coins;//accumulated up to 5 coins
-            if($user->save()) {
+            if ($user->save()) {
                 Mail::raw("$new_coins coins credited. On your account $user->coin coins", function ($mail) use ($user) {
                     $mail->to($user['email'])
-                        ->subject('Daily Refill!');
+                        ->subject('Daily Refill!')
+                    ;
                 });
             }
         }

@@ -1,18 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 use App\Repositories\JobVacancyRepository;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\View\View;
 
 class JobVacancyController extends Controller
 {
     /**
      * @param JobVacancyRepository $jobVacancyRepository
      */
-    public function __construct(protected JobVacancyRepository $jobVacancyRepository) {}
+    public function __construct(protected JobVacancyRepository $jobVacancyRepository)
+    {
+    }
 
     /**
      * @return View
@@ -42,6 +44,7 @@ class JobVacancyController extends Controller
     {
         try {
             $request->validate(['title' => 'required', 'description' => 'required']);
+
             return $this->jobVacancyRepository->createJobVacancy($request);
         } catch (\Exception $e) {
             return $this->jobVacancyRepository->failureResponse($e);

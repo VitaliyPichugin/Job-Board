@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Database\Factories;
 
@@ -17,7 +17,7 @@ class TagFactory extends Factory
     public function definition()
     {
         return [
-            'name' => fake()->unique()->word()
+            'name' => fake()->unique()->word(),
         ];
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Console;
 
@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      * @var string[]
      */
     protected $commands = [
-        DailyRefillAccount::class
+        DailyRefillAccount::class,
     ];
 
     /**

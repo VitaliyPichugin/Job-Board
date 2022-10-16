@@ -1,20 +1,22 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Jobs;
 
 use App\Mail\SendJobResponse;
+use App\Models\JobVacancyResponse;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
-use App\Models\JobVacancyResponse;
 
 class SendJobVacancyResponse implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected $response;
 
@@ -25,7 +27,7 @@ class SendJobVacancyResponse implements ShouldQueue
      *
      * @return void
      */
-    public function __construct( JobVacancyResponse $response, $data_email)
+    public function __construct(JobVacancyResponse $response, $data_email)
     {
         $this->response = $response;
         $this->data_email = $data_email;
@@ -53,7 +55,8 @@ class SendJobVacancyResponse implements ShouldQueue
     {
         Mail::raw($exception, function ($mail) {
             $mail->to(env('MAIL_ADMIN_ADDRESS'))
-                ->subject('Error!');
+                ->subject('Error!')
+            ;
         });
     }
 }

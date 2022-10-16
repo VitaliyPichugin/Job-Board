@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 return [
     'limit_send_job' => 2,

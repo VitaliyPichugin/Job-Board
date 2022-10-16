@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
@@ -49,7 +49,7 @@ class JobVacancyController extends Controller
     public function getListJobVacancies(Request $request): JsonResponse|AnonymousResourceCollection
     {
         try {
-           //TODO validation
+            //TODO validation
             return JobVacancyResource::collection($this->jobVacancyRepository->getListJobVacancies($request));
         } catch (\Exception $e) {
             return $this->jobVacancyRepository->failureResponse($e);
@@ -67,8 +67,9 @@ class JobVacancyController extends Controller
         try {
             $request->validate([
                                    'title' => 'required',
-                                   'description' => 'required'
+                                   'description' => 'required',
                                ]);
+
             return $this->jobVacancyRepository->createJobVacancy($request);
         } catch (\Exception $e) {
             return $this->jobVacancyRepository->failureResponse($e);
@@ -87,8 +88,9 @@ class JobVacancyController extends Controller
         try {
             $request->validate([
                                    'title' => 'required',
-                                   'description' => 'required'
+                                   'description' => 'required',
                                ]);
+
             return $this->jobVacancyRepository->updateJobVacancy($request, $id);
         } catch (\Exception $e) {
             return $this->jobVacancyRepository->failureResponse($e);

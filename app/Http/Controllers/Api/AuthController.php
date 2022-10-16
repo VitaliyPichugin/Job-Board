@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
@@ -55,13 +55,13 @@ class AuthController extends Controller
                                        'string',
                                        'email',
                                        'max:255',
-                                       'unique:users'
+                                       'unique:users',
                                    ],
                                    'password' => ['required', 'string', 'confirmed'],
                                ]);
 
 
-            $data = array();
+            $data = [];
             $data['name'] = $request->name;
             $data['email'] = $request->email;
             $data['password'] = Hash::make($request->password);
@@ -81,6 +81,7 @@ class AuthController extends Controller
     public function logout()
     {
         auth('api')->logout();
+
         return response()->json(['message' => 'User successfully signed out']);
     }
 

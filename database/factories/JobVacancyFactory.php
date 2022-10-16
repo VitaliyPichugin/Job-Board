@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Tag;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,10 +17,11 @@ class JobVacancyFactory extends Factory
     public function definition()
     {
         $user = \App\Models\User::factory(15)->create();
+
         return [
             'title' => fake()->jobTitle(),
             'description' => fake()->text(80),
-            'user_id' => $user->random()
+            'user_id' => $user->random(),
         ];
     }
 }

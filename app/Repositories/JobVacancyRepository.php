@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Jobs\SendJobVacancyResponse;
@@ -8,8 +8,8 @@ use App\Models\User;
 use App\Models\UserLike;
 use App\Services\CoinService;
 use App\Services\RateLimiterService as RateLimiter;
-use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 
 class JobVacancyRepository
 {
@@ -24,14 +24,18 @@ class JobVacancyRepository
             ->map(function ($item) {
                 $item->like_users = $item->likeUser->pluck('id')->toArray();
                 $item->like_jobs = $item->likeJob->pluck('id')->toArray();
+
                 return $item;
-            });
+            })
+        ;
         $data = JobVacancy::with(['tags', 'user', 'responses'])
             ->get()
             ->map(function ($item) {
                 $item->diff_human = $item->created_at->diffForHumans();
+
                 return $item;
-            });
+            })
+        ;
 
         return response()->json([
                                     'likes' => $userLikes->first(),
@@ -64,6 +68,7 @@ class JobVacancyRepository
                 $job->tags()->attach(collect($request->tags)->pluck('id'));
                 $coinService->updateUserCoins();
             });
+
             return response()->json("Job was posted");
         } else {
             return response()->json("Sorry not enough coins for send response", 201);
@@ -99,7 +104,7 @@ class JobVacancyRepository
                         'user' => $user->name,
                         'email' => $data[0]['job']['user']['email'],
                         'responses' => JobVacancyResponse::where('job_id', $request->job_id)->count(),
-                        'date' => $response['created_at']->toString()
+                        'date' => $response['created_at']->toString(),
                     ];
                     SendJobVacancyResponse::dispatch($response, $data_email)->delay(now()->addMilliseconds($delay));
                     $human = $this->convertMilliseconds($delay);
@@ -107,11 +112,14 @@ class JobVacancyRepository
                     if ($human) {
                         $response .= " (Author will be notified in $human)";
                     }
+
                     return response()->json($response);
                 }
             }
+
             return response()->json("Sorry not enough coins for send response", 201);
         }
+
         return response()->json("You are can't send proposal on your job", 201);
     }
 
@@ -129,6 +137,7 @@ class JobVacancyRepository
         if (in_array($request->id, $res['attached'])) {
             return 1;
         }
+
         return 0;
     }
 
@@ -144,7 +153,8 @@ class JobVacancyRepository
             })
             ->when($request->has('sort_response'), function ($query) use ($request) {
                 $query->withCount('responses')
-                    ->orderBy('responses_count', $request->sort_response);
+                    ->orderBy('responses_count', $request->sort_response)
+                ;
             })
             ->when($request->has('tags'), function ($query) use ($request) {
                 $query->whereHas('tags', function ($q) use ($request) {
@@ -165,13 +175,13 @@ class JobVacancyRepository
             })
             ->when($request->has('week'), function ($query) use ($request) {
                 $date = Carbon::now();
-                $date->setISODate($date->year, $request->week);
                 $query->whereBetween(
                     'created_at',
                     [$date->startOfWeek()->format('Y-m-d'), $date->endOfWeek()->format('Y-m-d')]
                 );
             })
-            ->get();
+            ->get()
+        ;
     }
 
     /**
@@ -184,8 +194,10 @@ class JobVacancyRepository
         if ($job) {
             $job->responses()->where('job_id', $job->id)->delete();
             $job->delete();
+
             return response()->json("Job was deleted");
         }
+
         return response()->json("You can only delete your job vacancy");
     }
 
@@ -198,8 +210,10 @@ class JobVacancyRepository
         $jobResponse = JobVacancyResponse::find($id);
         if ($jobResponse && auth()->id() === $jobResponse->user_id) {
             $jobResponse->delete();
+
             return response()->json("Job Response was deleted");
         }
+
         return response()->json("You can only delete your proposals");
     }
 
@@ -219,8 +233,10 @@ class JobVacancyRepository
             if ($tags) {
                 $job->tags()->sync($tags);
             }
+
             return response()->json("Job was updated");
         }
+
         return response()->json("You can only update your job vacancy");
     }
 
@@ -234,6 +250,7 @@ class JobVacancyRepository
         if ($job && auth()->id() === $job->user_id) {
             return $job;
         }
+
         return false;
     }
 
@@ -250,8 +267,10 @@ class JobVacancyRepository
                     $res[$tag_id] = $tag_id;//uniq tags
                 }
             }
+
             return $res;
         }
+
         return false;
     }
 
@@ -262,7 +281,8 @@ class JobVacancyRepository
     {
         return UserLike::with(['likeUser', 'likeJob'])
             ->whereId(auth()->id())
-            ->get();
+            ->get()
+        ;
     }
 
     /**
@@ -273,7 +293,8 @@ class JobVacancyRepository
     {
         return JobVacancyResponse::where('job_id', $job)
             ->with('job.user')
-            ->get();
+            ->get()
+        ;
     }
 
     /**
@@ -299,8 +320,10 @@ class JobVacancyRepository
                 }
                 $i++;
             }
+
             return array_sum($dates);
         }
+
         return 0;
     }
 
@@ -313,6 +336,7 @@ class JobVacancyRepository
         if ($value) {
             return date("H:i:s", $value / 1000);
         }
+
         return 0;
     }
 
@@ -324,5 +348,4 @@ class JobVacancyRepository
     {
         return response()->json("Error in {$e->getLine()} line: {$e->getMessage()}");
     }
-
 }

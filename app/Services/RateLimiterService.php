@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Services;
 
@@ -21,7 +21,8 @@ class RateLimiterService
         protected string $key = '',
         protected int $maxAttempts = 0,
         protected int $decaySeconds = 0,
-    ) {}
+    ) {
+    }
 
     /**
      * @param \Closure $callback
@@ -44,6 +45,7 @@ class RateLimiterService
             $hours = $dt->diffInHours($dt->copy()->addSeconds($value)->subDays($days));
             $minutes = $dt->diffInMinutes($dt->copy()->addSeconds($value)->subDays($days)->subHours($hours));
             $tryAgain = CarbonInterval::days($days)->hours($hours)->minutes($minutes)->forHumans();
+
             throw new ThrottleRequestsException("Too Many Attempts. Try again in $tryAgain");
         }
     }

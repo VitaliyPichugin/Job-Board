@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
 use \App\Http\Controllers\Api\JobVacancyController;
+use App\Http\Controllers\Api\AuthController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +29,7 @@ Route::group(['middleware' => 'api'], function () {
         Route::delete('{id}', [JobVacancyController::class, 'deleteJobVacancy']);
         Route::post('send-response', [JobVacancyController::class, 'sendJobVacancyResponse']);
         Route::delete('response/', [JobVacancyController::class, 'deleteResponse']);
-        Route::get('liked', [JobVacancyController::class, 'getLiked'])->middleware('auth:api');
+        Route::get('liked', [JobVacancyController::class, 'getLiked']);
 
         Route::get('all', [JobVacancyController::class, 'index']);
         Route::get('{id}', [JobVacancyController::class, 'show']);

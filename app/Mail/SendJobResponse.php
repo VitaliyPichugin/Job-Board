@@ -1,15 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class SendJobResponse extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     public $data;
 
@@ -32,6 +32,7 @@ class SendJobResponse extends Mailable
     {
         return $this->view('email.response')
             ->subject('Response to Job')
-            ->with(['data' => $this->data]);
+            ->with(['data' => $this->data])
+        ;
     }
 }

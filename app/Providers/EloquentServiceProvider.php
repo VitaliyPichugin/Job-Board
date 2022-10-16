@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Providers;
 
@@ -18,7 +18,7 @@ class EloquentServiceProvider extends ServiceProvider
     {
         Relation::morphMap([
                                'job' => JobVacancy::class,
-                               'user' => User::class
+                               'user' => User::class,
                            ]);
     }
 
