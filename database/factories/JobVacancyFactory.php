@@ -16,7 +16,7 @@ class JobVacancyFactory extends Factory
      */
     public function definition()
     {
-        $user = \App\Models\User::factory(50)->create();
+        $user = \App\Models\User::factory(15)->create();
 
         return [
             'title' => fake()->jobTitle(),

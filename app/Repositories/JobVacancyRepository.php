@@ -175,6 +175,7 @@ class JobVacancyRepository
             })
             ->when($request->has('week'), function ($query) use ($request) {
                 $date = Carbon::now();
+                $date->setISODate($request->year ?? $date->year, $request->week);
                 $query->orWhereBetween(
                     'created_at',
                     [$date->startOfWeek()->format('Y-m-d'), $date->endOfWeek()->format('Y-m-d')]
@@ -229,8 +230,8 @@ class JobVacancyRepository
             $job->title = $request->title;
             $job->description = $request->description;
             $job->save();
-            $tags = $this->validTags($request->tags);
-            if ($tags) {
+            $tags = collect($request->tags)->pluck('id')->unique();
+            if ($tags->count()) {
                 $job->tags()->sync($tags);
             }
 
@@ -249,26 +250,6 @@ class JobVacancyRepository
         $job = JobVacancy::find($id);
         if ($job && auth()->id() === $job->user_id) {
             return $job;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param $tags
-     * @return array|false
-     */
-    private function validTags($tags): bool|array
-    {
-        if ($tags && count($tags)) {
-            $res = [];
-            foreach ($tags as $tag_id) {
-                if (is_numeric($tag_id)) {
-                    $res[$tag_id] = $tag_id;//uniq tags
-                }
-            }
-
-            return $res;
         }
 
         return false;
@@ -334,7 +315,7 @@ class JobVacancyRepository
     private function convertMilliseconds($value): int|string
     {
         if ($value) {
-            return date("H:i:s", $value / 1000);
+            return date("H:i:s", intval($value / 1000));
         }
 
         return 0;

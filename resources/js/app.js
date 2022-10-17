@@ -10,6 +10,8 @@ import 'primevue/resources/themes/nova/theme.css'
 
 const app = createApp({});
 
+window.$userId = document.querySelector("meta[name='user-id']").getAttribute('content');
+
 import JobVacancy from './components/views/JobVacancy.vue';
 
 app.component('job-vacancy', JobVacancy);

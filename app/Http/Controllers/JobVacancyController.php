@@ -52,6 +52,39 @@ class JobVacancyController extends Controller
     }
 
     /**
+     *
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     */
+    public function update(Request $request, $id): JsonResponse
+    {
+        try {
+            $request->validate([
+                                   'title' => 'required',
+                                   'description' => 'required',
+                               ]);
+
+            return $this->jobVacancyRepository->updateJobVacancy($request, $id);
+        } catch (\Exception $e) {
+            return $this->jobVacancyRepository->failureResponse($e);
+        }
+    }
+
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
+    public function deleteJobVacancy($id): JsonResponse
+    {
+        try {
+            return $this->jobVacancyRepository->deleteJobVacancy($id);
+        } catch (\Exception $e) {
+            return $this->jobVacancyRepository->failureResponse($e);
+        }
+    }
+
+    /**
      * @param Request $request
      * @return JsonResponse
      */

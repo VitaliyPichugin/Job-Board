@@ -23,7 +23,6 @@ class JobVacancyController extends Controller
     }
 
     /**
-     * Get all vacancies
      *
      * @return AnonymousResourceCollection
      */
@@ -33,7 +32,6 @@ class JobVacancyController extends Controller
     }
 
     /**
-     *  Fetch a single job vacancy.
      *
      * @param $id
      * @return AnonymousResourceCollection
@@ -57,12 +55,11 @@ class JobVacancyController extends Controller
     }
 
     /**
-     * Create job vacancy
      *
      * @param Request $request
      * @return JsonResponse
      */
-    public function createJobVacancy(Request $request) : JsonResponse
+    public function createJobVacancy(Request $request): JsonResponse
     {
         try {
             $request->validate([
@@ -77,7 +74,6 @@ class JobVacancyController extends Controller
     }
 
     /**
-     * Update job vacancy
      *
      * @param Request $request
      * @param $id
@@ -114,7 +110,7 @@ class JobVacancyController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function sendJobVacancyResponse(Request $request) : JsonResponse
+    public function sendJobVacancyResponse(Request $request): JsonResponse
     {
         try {
             return $this->jobVacancyRepository->sendJobVacancyResponse($request);
