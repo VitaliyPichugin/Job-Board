@@ -63,9 +63,9 @@ class JobVacancyController extends Controller
     {
         try {
             $request->validate([
-                                   'title' => 'required',
-                                   'description' => 'required',
-                               ]);
+                'title' => 'required',
+                'description' => 'required',
+            ]);
 
             return $this->jobVacancyRepository->createJobVacancy($request);
         } catch (\Exception $e) {
@@ -83,9 +83,9 @@ class JobVacancyController extends Controller
     {
         try {
             $request->validate([
-                                   'title' => 'required',
-                                   'description' => 'required',
-                               ]);
+                'title' => 'required',
+                'description' => 'required',
+            ]);
 
             return $this->jobVacancyRepository->updateJobVacancy($request, $id);
         } catch (\Exception $e) {

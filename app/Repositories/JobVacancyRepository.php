@@ -18,29 +18,22 @@ class JobVacancyRepository
      */
     public function getAll(): JsonResponse
     {
-        $userLikes = UserLike::with(['likeUser', 'likeJob'])
-            ->whereId(auth()->id())
-            ->get()
-            ->map(function ($item) {
-                $item->like_users = $item->likeUser->pluck('id')->toArray();
-                $item->like_jobs = $item->likeJob->pluck('id')->toArray();
+        $userLikes = UserLike::with(['likeUser', 'likeJob'])->whereId(auth()->id())->get()->map(function ($item) {
+            $item->like_users = $item->likeUser->pluck('id')->toArray();
+            $item->like_jobs = $item->likeJob->pluck('id')->toArray();
 
-                return $item;
-            })
-        ;
-        $data = JobVacancy::with(['tags', 'user', 'responses'])
-            ->get()
-            ->map(function ($item) {
-                $item->diff_human = $item->created_at->diffForHumans();
+            return $item;
+        });
+        $data = JobVacancy::with(['tags', 'user', 'responses'])->get()->map(function ($item) {
+            $item->diff_human = $item->created_at->diffForHumans();
 
-                return $item;
-            })
-        ;
+            return $item;
+        });
 
         return response()->json([
-                                    'likes' => $userLikes->first(),
-                                    'data' => $data,
-                                ]);
+            'likes' => $userLikes->first(),
+            'data' => $data,
+        ]);
     }
 
     /**
@@ -53,12 +46,7 @@ class JobVacancyRepository
         $user = auth()->id();
         $coinService = new CoinService(User::find($user), 'POST_JOB');
         if ($coinService->checkUserCoins()) {
-            $obj = new RateLimiter(
-                (int)$user,
-                'send-job',
-                config('global.limit_send_job'),
-                config('global.period_send_job')
-            );
+            $obj = new RateLimiter((int) $user, 'send-job', config('global.limit_send_job'), config('global.period_send_job'));
             $obj->throttle(function () use ($request, $user, $coinService) {
                 $job = new JobVacancy();
                 $job->title = $request->title;
@@ -82,7 +70,7 @@ class JobVacancyRepository
     public function sendJobVacancyResponse($request): JsonResponse
     {
         $job_id = $request->job_id;
-        if (!JobVacancy::author($job_id)->first()) {
+        if (! JobVacancy::author($job_id)->first()) {
             $id = auth()->id();
             $user = User::find($id);
             $coinService = new CoinService($user, 'SEND_RESPONSE');
@@ -91,10 +79,10 @@ class JobVacancyRepository
                 $author = User::find($request->author_id)->proposals();
                 $delay = $this->getDelay($author);
                 $response = $responses->firstOrCreate([
-                                                          'job_id' => $job_id,
-                                                          'user_id' => $id,
-                                                      ]);
-                if (!$response->wasRecentlyCreated) {
+                    'job_id' => $job_id,
+                    'user_id' => $id,
+                ]);
+                if (! $response->wasRecentlyCreated) {
                     return response()->json("Proposal has already been sent", 201);
                 } else {
                     $coinService->updateUserCoins();
@@ -147,42 +135,30 @@ class JobVacancyRepository
      */
     public function getListJobVacancies($request): mixed
     {
-        return JobVacancy::query()
-            ->when($request->has('sort_date'), function ($query) use ($request) {
-                $query->orderBy('created_at', $request->sort_date);
-            })
-            ->when($request->has('sort_response'), function ($query) use ($request) {
-                $query->withCount('responses')
-                    ->orderBy('responses_count', $request->sort_response)
-                ;
-            })
-            ->when($request->has('tags'), function ($query) use ($request) {
-                $query->orWhereHas('tags', function ($q) use ($request) {
-                    return $q->whereIn('tag_id', $request->tags);
-                });
-            })
-            ->when($request->has('date'), function ($query) use ($request) {
-                $query->orWhereDate('created_at', $request->date);
-            })
-            ->when($request->has('day'), function ($query) use ($request) {
-                $query->orWhereDay('created_at', $request->day);
-            })
-            ->when($request->has('month'), function ($query) use ($request) {
-                $query->orWhereMonth('created_at', $request->month);
-            })
-            ->when($request->has('year'), function ($query) use ($request) {
-                $query->orWhereYear('created_at', $request->year);
-            })
-            ->when($request->has('week'), function ($query) use ($request) {
-                $date = Carbon::now();
-                $date->setISODate($request->year ?? $date->year, $request->week);
-                $query->orWhereBetween(
-                    'created_at',
-                    [$date->startOfWeek()->format('Y-m-d'), $date->endOfWeek()->format('Y-m-d')]
-                );
-            })
-            ->get()
-        ;
+        return JobVacancy::query()->when($request->has('sort_date'), function ($query) use ($request) {
+            $query->orderBy('created_at', $request->sort_date);
+        })->when($request->has('sort_response'), function ($query) use ($request) {
+            $query->withCount('responses')->orderBy('responses_count', $request->sort_response);
+        })->when($request->has('tags'), function ($query) use ($request) {
+            $query->orWhereHas('tags', function ($q) use ($request) {
+                return $q->whereIn('tag_id', $request->tags);
+            });
+        })->when($request->has('date'), function ($query) use ($request) {
+            $query->orWhereDate('created_at', $request->date);
+        })->when($request->has('day'), function ($query) use ($request) {
+            $query->orWhereDay('created_at', $request->day);
+        })->when($request->has('month'), function ($query) use ($request) {
+            $query->orWhereMonth('created_at', $request->month);
+        })->when($request->has('year'), function ($query) use ($request) {
+            $query->orWhereYear('created_at', $request->year);
+        })->when($request->has('week'), function ($query) use ($request) {
+            $date = Carbon::now();
+            $date->setISODate($request->year ?? $date->year, $request->week);
+            $query->orWhereBetween('created_at', [
+                $date->startOfWeek()->format('Y-m-d'),
+                $date->endOfWeek()->format('Y-m-d')
+            ]);
+        })->get();
     }
 
     /**
@@ -260,10 +236,7 @@ class JobVacancyRepository
      */
     public function getLiked(): mixed
     {
-        return UserLike::with(['likeUser', 'likeJob'])
-            ->whereId(auth()->id())
-            ->get()
-        ;
+        return UserLike::with(['likeUser', 'likeJob'])->whereId(auth()->id())->get();
     }
 
     /**
@@ -272,10 +245,7 @@ class JobVacancyRepository
      */
     private function getJobVacancyData($job): mixed
     {
-        return JobVacancyResponse::where('job_id', $job)
-            ->with('job.user')
-            ->get()
-        ;
+        return JobVacancyResponse::where('job_id', $job)->with('job.user')->get();
     }
 
     /**

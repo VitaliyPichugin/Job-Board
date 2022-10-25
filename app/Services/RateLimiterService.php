@@ -32,13 +32,8 @@ class RateLimiterService
     public function throttle(\Closure $callback): void
     {
         $key = "{$this->key}:{$this->user}";
-        $executed = BaseRateLimiter::attempt(
-            $key,
-            $this->maxAttempts,
-            $callback,
-            $this->decaySeconds,
-        );
-        if (!$executed) {
+        $executed = BaseRateLimiter::attempt($key, $this->maxAttempts, $callback, $this->decaySeconds,);
+        if (! $executed) {
             $value = $this->limiter()->availableIn($key);
             $dt = Carbon::now();
             $days = $dt->diffInDays($dt->copy()->addSeconds($value));

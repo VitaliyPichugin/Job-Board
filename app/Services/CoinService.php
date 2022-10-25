@@ -50,9 +50,7 @@ class CoinService
             $user->coin = $user_coins + $new_coins;//accumulated up to 5 coins
             if ($user->save()) {
                 Mail::raw("$new_coins coins credited. On your account $user->coin coins", function ($mail) use ($user) {
-                    $mail->to($user['email'])
-                        ->subject('Daily Refill!')
-                    ;
+                    $mail->to($user['email'])->subject('Daily Refill!');
                 });
             }
         }

@@ -12,9 +12,7 @@ class JobVacancyController extends Controller
     /**
      * @param JobVacancyRepository $jobVacancyRepository
      */
-    public function __construct(protected JobVacancyRepository $jobVacancyRepository)
-    {
-    }
+    public function __construct(protected JobVacancyRepository $jobVacancyRepository) {}
 
     /**
      * @return View
@@ -61,9 +59,9 @@ class JobVacancyController extends Controller
     {
         try {
             $request->validate([
-                                   'title' => 'required',
-                                   'description' => 'required',
-                               ]);
+                'title' => 'required',
+                'description' => 'required',
+            ]);
 
             return $this->jobVacancyRepository->updateJobVacancy($request, $id);
         } catch (\Exception $e) {

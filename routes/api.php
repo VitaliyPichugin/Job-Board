@@ -31,14 +31,11 @@ Route::group(['middleware' => 'api'], function () {
         Route::delete('response/{id}', [JobVacancyController::class, 'deleteResponse']);
         Route::get('liked', [JobVacancyController::class, 'getLiked']);
 
-        Route::get('all', [JobVacancyController::class, 'index'])
-            ->name('index')
-        ;
-        Route::get('detail/{id}', [JobVacancyController::class, 'show'])
-            ->name('show')
-        ;
-        Route::get('list-of-job-vacancies', [JobVacancyController::class, 'getListJobVacancies'])
-            ->name('getListJobVacancies')
-        ;
+        Route::get('all', [JobVacancyController::class, 'index'])->name('index');
+        Route::get('detail/{id}', [JobVacancyController::class, 'show'])->name('show');
+        Route::get('list-of-job-vacancies', [
+            JobVacancyController::class,
+            'getListJobVacancies'
+        ])->name('getListJobVacancies');
     });
 });

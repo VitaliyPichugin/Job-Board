@@ -20,7 +20,7 @@ class TagController extends Controller
 
             return response()->json(Tag::create(['name' => $request->name]));
         } catch (\Exception $e) {
-            return response()->json($e->getMessage(), 409, );
+            return response()->json($e->getMessage(), 409);
         }
     }
 

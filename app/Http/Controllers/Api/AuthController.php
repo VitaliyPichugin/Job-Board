@@ -27,13 +27,13 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-                               'email' => 'required',
-                               'password' => 'required',
-                           ]);
+            'email' => 'required',
+            'password' => 'required',
+        ]);
 
         $credentials = request(['email', 'password']);
 
-        if (!$token = auth('api')->attempt($credentials)) {
+        if (! $token = auth('api')->attempt($credentials)) {
             return response()->json(['error' => 'Email or Password Invalid'], 401);
         }
 
@@ -49,17 +49,16 @@ class AuthController extends Controller
     {
         try {
             $request->validate([
-                                   'name' => ['required', 'string', 'max:255'],
-                                   'email' => [
-                                       'required',
-                                       'string',
-                                       'email',
-                                       'max:255',
-                                       'unique:users',
-                                   ],
-                                   'password' => ['required', 'string', 'confirmed'],
-                               ]);
-
+                'name' => ['required', 'string', 'max:255'],
+                'email' => [
+                    'required',
+                    'string',
+                    'email',
+                    'max:255',
+                    'unique:users',
+                ],
+                'password' => ['required', 'string', 'confirmed'],
+            ]);
 
             $data = [];
             $data['name'] = $request->name;
@@ -105,12 +104,12 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-                                    'access_token' => $token,
-                                    'token_type' => 'bearer',
-                                    'expires_in' => auth('api')->factory()->getTTL() * 60,
-                                    'name' => auth('api')->user()->name,
-                                    'user_id' => auth('api')->user()->id,
-                                    'email' => auth('api')->user()->email,
-                                ]);
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'name' => auth('api')->user()->name,
+            'user_id' => auth('api')->user()->id,
+            'email' => auth('api')->user()->email,
+        ]);
     }
 }
